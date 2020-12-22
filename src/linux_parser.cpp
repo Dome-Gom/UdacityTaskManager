@@ -67,14 +67,15 @@ float LinuxParser::MemoryUtilization() {
   string line;
   string key;
   string value;
-  float memTotal, memFree;
+  float memTotal = 1;
+  float memFree = 1;
   std::ifstream filestream (kProcDirectory + kMeminfoFilename);
   if (filestream.is_open()){
     while(std::getline(filestream, line)){
       std::istringstream linestream(line);
       while (linestream >> key >> value){
-        if (key == "MemTotal:") memTotal = std::stof(value);
-        if (key == "MemFree:") memFree = std::stof(value);
+        if (key == "MemTotal:" && value != "") memTotal = std::stof(value);
+        if (key == "MemFree:"  && value != "") memFree = std::stof(value);
       }
     }
   }
@@ -84,13 +85,13 @@ float LinuxParser::MemoryUtilization() {
 long LinuxParser::UpTime() { 
   string line;
   string value;
-  long uptime;
+  long uptime = 0;
   std::ifstream filestream (kProcDirectory + kUptimeFilename);
   if (filestream.is_open()){
     std::getline(filestream, line);
     std::istringstream linestream(line);
     linestream >> value;
-    uptime = std::stoi(value);
+    if(value != "") uptime = std::stoi(value);
   }
   return uptime;
 }
@@ -105,12 +106,14 @@ void LinuxParser::ProcessCpuUsage(std::vector<long> &cpuUsage, int pid){
     std::istringstream linestream(line);
     while(nrValue < 23){
       linestream >> value;
-      if (nrValue == 14) cpuUsage[ProcessCPUUsage::kUtime_14] = stol(value);
-      else if (nrValue == 15) cpuUsage[ProcessCPUUsage::kStime_15] = stol(value);
-      else if (nrValue == 16) cpuUsage[ProcessCPUUsage::kCutime_16] = stol(value);
-      else if (nrValue == 17) cpuUsage[ProcessCPUUsage::kCstime_17] = stol(value);
-      else if (nrValue == 22) cpuUsage[ProcessCPUUsage::kStartTime_22] = stol(value);
-      nrValue++;
+      if(value != ""){
+        if (nrValue == 14) cpuUsage[ProcessCPUUsage::kUtime_14] = stol(value);
+        else if (nrValue == 15) cpuUsage[ProcessCPUUsage::kStime_15] = stol(value);
+        else if (nrValue == 16) cpuUsage[ProcessCPUUsage::kCutime_16] = stol(value);
+        else if (nrValue == 17) cpuUsage[ProcessCPUUsage::kCstime_17] = stol(value);
+        else if (nrValue == 22) cpuUsage[ProcessCPUUsage::kStartTime_22] = stol(value);
+        nrValue++;
+      }
     }
   }
   return;
@@ -147,7 +150,7 @@ int LinuxParser::TotalProcesses() {
     while(std::getline(filestream, line)){
       std::istringstream linestream(line);
       linestream >> key >> value;
-      if (key == "processes") totalProcesses = std::stoi(value);
+      if (key == "processes" && value != "") totalProcesses = std::stoi(value);
     }
   }
   return totalProcesses;
@@ -163,7 +166,7 @@ int LinuxParser::RunningProcesses() {
     while(std::getline(filestream, line)){
       std::istringstream linestream(line);
       linestream >> key >> value;
-      if (key == "procs_running") runningProcesses = std::stoi(value);
+      if (key == "procs_running" && value != "") runningProcesses = std::stoi(value);
     }
   }
   return runningProcesses;
@@ -236,14 +239,14 @@ long LinuxParser::UpTime(int pid) {
   string line;
   string value;
   int nrValue = 1;
-  long upTime;
+  long upTime = -1;
   std::ifstream filestream (kProcDirectory + "/" + to_string(pid) + kStatFilename);
   if (filestream.is_open()){
     std::getline(filestream, line);
     std::istringstream linestream(line);
     while(nrValue < 23){
       linestream >> value;
-      if (nrValue == 22) upTime = stol(value);
+      if (nrValue == 22 && value != "") upTime = stol(value);
       nrValue++;
     }
   }

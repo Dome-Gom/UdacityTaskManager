@@ -35,7 +35,8 @@ string Process::Command() {
 
 string Process::Ram() { 
     string ram_kb = LinuxParser::Ram(pid_);
-    float ram_mb = stof(ram_kb)/1000;
+    float ram_mb = 0;
+    if (ram_kb != "") ram_mb = stof(ram_kb)/1000;
     std::stringstream ram_mb_low_precision;
     ram_mb_low_precision << std::setprecision(2) << ram_mb;
     return ram_mb_low_precision.str(); 

@@ -19,7 +19,8 @@ float Processor::Utilization() {
     processorData_.clear();
 
     for(int i = 0; i < 10; i++){
-        processorData_.push_back(std::stol(processorDataParsed_[i]));
+        if(processorDataParsed_[i] != "") processorData_.push_back(std::stol(processorDataParsed_[i]));
+        else processorData_.push_back(-1);
     }
 
     preIdle = preProcessorData_[3]+preProcessorData_[4];
