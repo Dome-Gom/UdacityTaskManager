@@ -28,6 +28,7 @@ string LinuxParser::OperatingSystem() {
         }
       }
     }
+    filestream.close();
   }
   return value;
 }
@@ -40,6 +41,7 @@ string LinuxParser::Kernel() {
     std::getline(stream, line);
     std::istringstream linestream(line);
     linestream >> os >> version >> kernel;
+    stream.close();
   }
   return kernel;
 }
@@ -78,6 +80,7 @@ float LinuxParser::MemoryUtilization() {
         if (key == "MemFree:"  && value != "") memFree = std::stof(value);
       }
     }
+    filestream.close();
   }
   return ((memTotal-memFree)/memTotal);
 }
@@ -92,6 +95,7 @@ long LinuxParser::UpTime() {
     std::istringstream linestream(line);
     linestream >> value;
     if(value != "") uptime = std::stoi(value);
+    filestream.close();
   }
   return uptime;
 }
@@ -115,6 +119,7 @@ void LinuxParser::ProcessCpuUsage(std::vector<long> &cpuUsage, int pid){
         nrValue++;
       }
     }
+    filestream.close();
   }
   return;
 }
@@ -136,6 +141,7 @@ vector<string> LinuxParser::CpuUtilization() {
         }
       }
     }
+    filestream.close();
   }
   return values;
 }
@@ -152,6 +158,7 @@ int LinuxParser::TotalProcesses() {
       linestream >> key >> value;
       if (key == "processes" && value != "") totalProcesses = std::stoi(value);
     }
+    filestream.close();
   }
   return totalProcesses;
 }
@@ -168,6 +175,7 @@ int LinuxParser::RunningProcesses() {
       linestream >> key >> value;
       if (key == "procs_running" && value != "") runningProcesses = std::stoi(value);
     }
+    filestream.close();
   }
   return runningProcesses;
 }
@@ -177,6 +185,7 @@ string LinuxParser::Command(int pid) {
   std::ifstream filestream (kProcDirectory + "/" + to_string(pid) + kCmdlineFilename);
   if (filestream.is_open()){
     std::getline(filestream, line);
+    filestream.close();
   }
   return line; 
 }
@@ -193,6 +202,7 @@ string LinuxParser::Ram(int pid) {
       linestream >> key >> value;
       if (key == "VmSize:") ramSize = value;
     }
+    filestream.close();
   }
   return ramSize;
 }
@@ -209,6 +219,7 @@ string LinuxParser::Uid(int pid) {
       linestream >> key >> value;
       if (key == "Uid:") uid = value;
     }
+    filestream.close();
   }
   return uid;
 }
@@ -231,6 +242,7 @@ string LinuxParser::User(int pid) {
         }
       }
     }
+    filestream.close();
   }
   return user;
 }
@@ -249,6 +261,7 @@ long LinuxParser::UpTime(int pid) {
       if (nrValue == 22 && value != "") upTime = stol(value);
       nrValue++;
     }
+    filestream.close();
   }
   return upTime; 
 }

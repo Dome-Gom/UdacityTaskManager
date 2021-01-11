@@ -25,12 +25,13 @@ float Process::CpuUtilization() {
     LinuxParser::ProcessCpuUsage(processCpuUsage_, pid_);
     totalTime = processCpuUsage_[ProcessCPUUsage::kUtime_14] + processCpuUsage_[ProcessCPUUsage::kStime_15];
     upTimeProcess = LinuxParser::UpTime() - ((float)processCpuUsage_[ProcessCPUUsage::kStartTime_22]/(float)hertz_);
-    cpuUsage_ = 100 * ((totalTime / hertz_)/ upTimeProcess); 
+    cpuUsage_ = ((totalTime / hertz_)/ upTimeProcess); 
     return cpuUsage_;
 }
 
 string Process::Command() { 
-    return LinuxParser::Command(pid_); 
+    string fullCommand = LinuxParser::Command(pid_);
+    return fullCommand.substr(0,40) + "...";
 }
 
 string Process::Ram() { 
@@ -47,7 +48,7 @@ string Process::User() {
 }
 
 long int Process::UpTime() { 
-    return (LinuxParser::UpTime(pid_)/hertz_); 
+    return LinuxParser::UpTime()-(LinuxParser::UpTime(pid_)/hertz_); 
 }
 
 bool Process::operator<(const Process& a) const { 
